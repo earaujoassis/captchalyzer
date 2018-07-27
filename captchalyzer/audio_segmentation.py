@@ -19,13 +19,12 @@ def naive_audio_segmentation(filename, limit=4):
     steps = list(range(0, audio_data.shape[0], window_size))
     for i in range(limit):
         local_audio_data = audio_data[steps[i]:steps[i + 1]]
-        audio_mfcc = librosa.feature.mfcc(local_audio_data, sr=sampling_rate).T
+        audio_mfcc = librosa.feature.mfcc(local_audio_data, sr=sampling_rate, n_mfcc=12).T
         scaler = StandardScaler()
         scaled_audio_mfcc = scaler.fit_transform(audio_mfcc)
-        reshaped_scaled_audio = np.reshape(scaled_audio_mfcc, (np.product(scaled_audio_mfcc.shape),))
-        data_per_segmentation.append(reshaped_scaled_audio)
+        data_per_segmentation.append(scaled_audio_mfcc)
 
-    return np.array(data_per_segmentation)
+    return data_per_segmentation
 
 
 def onset_strength_envelope_audio_segmentation(filename, limit=4):
