@@ -16,10 +16,18 @@ def main():
         'training_data': training_collection,
         'validation_data': validation_collection
     }
-    print('Support Vector accuracy: {0}'.format(
-        captchalyzer.classify_through_support_vetor(data_for_analysis)['accuracy']))
-    print('Random Forest accuracy: {0}'.format(
-        captchalyzer.classify_through_random_forest(data_for_analysis)['accuracy']))
+    captchalyzer.output_classifier_results(
+        captchalyzer.classify_through_support_vetor(data_for_analysis),
+        filename='support_vetor_results.json')
+    captchalyzer.output_classifier_results(
+        captchalyzer.classify_through_random_forest(data_for_analysis),
+        filename='random_forest_results.json')
+    captchalyzer.output_classifier_results(
+        captchalyzer.classify_through_kneighbors(data_for_analysis),
+        filename='kneighbors_results.json')
+#    captchalyzer.output_classifier_results(
+#        captchalyzer.classify_through_discriminant_analysis(data_for_analysis),
+#        filename='discriminant_analysis_results.json')
 
 
 if __name__ == '__main__':

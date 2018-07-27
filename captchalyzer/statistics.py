@@ -2,6 +2,7 @@
 
 import os
 import librosa
+import json
 import numpy as np
 
 from collections import Counter
@@ -33,9 +34,16 @@ def collection_data(folders=[], training=True):
             else:
                 entry['data'] = DataFile(
                     X=naive_audio_segmentation(filepath),
-                    expectation=characters_str)
+                    expectation=characters)
             audios_data.append(entry)
     return audios_data
+
+
+def output_classifier_results(results, filename='results.json'):
+    if os.path.isfile(filename):
+        os.remove(filename)
+    with open(filename, 'w') as outfile:
+        json.dump(results, outfile, indent=4, separators=(',', ': '))
 
 
 def basic_statistics(collection=[]):
