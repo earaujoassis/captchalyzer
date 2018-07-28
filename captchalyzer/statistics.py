@@ -4,10 +4,9 @@ import os
 import librosa
 import json
 import numpy as np
-
-from collections import Counter
 from .classifiers_utils import DataFile
 from .audio_segmentation import naive_audio_segmentation, onset_strength_envelope_audio_segmentation
+from collections import Counter
 
 
 def collection_data(folders=[], training=True):

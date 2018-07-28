@@ -6,7 +6,6 @@ import sys
 import csv
 import captchalyzer
 
-
 def main():
     training_collection = captchalyzer.collection_data(
         ['audiofiles/base_treinamento_I'])

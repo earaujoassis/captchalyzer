@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from .classifiers_utils import rng, general_classifier
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier

@@ -6,9 +6,9 @@ rng = np.random.RandomState(3141592653)
 
 class DataFile(object):
     def __init__(self, X, y=None, expectation=None):
+        self.expectation = expectation
         self.X = X
         self.y = y
-        self.expectation = expectation
 
 
 def result_object(entry, obj={}):

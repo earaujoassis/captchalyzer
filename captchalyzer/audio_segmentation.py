@@ -2,14 +2,9 @@
 
 import os
 import librosa
-import librosa.display
+import librosa.feature
 import numpy as np
-
-
-##
-# References
-# http://zderadicka.eu/decoding-audio-captchas-in-python/
-# https://github.com/izderadicka/adecaptcha
+from sklearn.preprocessing import StandardScaler
 
 
 def naive_audio_segmentation(filename, limit=4):
@@ -23,7 +18,12 @@ def naive_audio_segmentation(filename, limit=4):
     window_size = sampling_rate * step
     steps = list(range(0, audio_data.shape[0], window_size))
     for i in range(limit):
-        data_per_segmentation.append(audio_data[steps[i]:steps[i + 1]])
+        local_audio_data = audio_data[steps[i]:steps[i + 1]]
+        audio_mfcc = librosa.feature.mfcc(local_audio_data, sr=sampling_rate).T
+        scaler = StandardScaler()
+        scaled_audio_mfcc = scaler.fit_transform(audio_mfcc)
+        reshaped_scaled_audio = np.reshape(scaled_audio_mfcc, (np.product(scaled_audio_mfcc.shape),))
+        data_per_segmentation.append(reshaped_scaled_audio)
 
     return np.array(data_per_segmentation)
 
