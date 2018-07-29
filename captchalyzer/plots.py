@@ -5,7 +5,7 @@ import librosa
 import librosa.display
 import numpy as np
 import matplotlib.pyplot as plt
-from .improved_audio_segmentation import improved_audio_segmentation
+from .improved_audio_segmentation import silence_removed_audio_segmentation
 
 
 def waveplot(filename):
@@ -21,7 +21,7 @@ def waveplot(filename):
 
 
 def silence_removed_audio_segmentation_plot(filename):
-    improved_audio_segmentation(filename, plot=True)
+    silence_removed_audio_segmentation(filename, plot=True)
 
 
 def onset_detection_plot(filename):

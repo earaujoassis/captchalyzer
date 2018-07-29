@@ -4,8 +4,8 @@ import os
 import librosa
 import json
 import numpy as np
-from .classifiers_utils import DataFile
-from .audio_segmentation import naive_audio_segmentation, onset_strength_envelope_audio_segmentation
+from .data_entry import DataEntry
+
 from collections import Counter
 
 
@@ -13,27 +13,14 @@ def collection_data(folders=[], training=True):
     total_files = 0
     audios_data = []
     for folder in folders:
-        files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
-        for file in files:
+        filenames = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+        for filename in filenames:
             total_files += 1
-            filepath = os.path.join(folder, file)
-            audio_data, sampling_rate = librosa.load(filepath, sr=None, mono=False)
-            characters_str = file.replace('.wav', '')
-            characters = list(characters_str)
+            filepath = os.path.join(folder, filename)
             entry = {
-                'audio_length': audio_data.shape[0] / sampling_rate,
-                'filepath': filepath,
-                'file': file,
-                'characters': characters
+                'data': DataEntry(filepath),
+                'filepath': filepath
             }
-            if training:
-                entry['data'] = DataFile(
-                    X=naive_audio_segmentation(filepath),
-                    y=characters)
-            else:
-                entry['data'] = DataFile(
-                    X=naive_audio_segmentation(filepath),
-                    expectation=characters)
             audios_data.append(entry)
     return audios_data
 
@@ -46,8 +33,8 @@ def output_classifier_results(results, filename='results.json'):
 
 
 def basic_statistics(collection=[]):
-    all_audios_length = list(map(lambda x: x['audio_length'], collection))
-    all_characters = list(map(lambda x: x['characters'], collection))
+    all_audios_length = list(map(lambda x: x['data'].audio_length, collection))
+    all_characters = list(map(lambda x: x['data'].characters, collection))
     audios_characters_counter = Counter(np.array(all_characters).flatten())
 
     return {

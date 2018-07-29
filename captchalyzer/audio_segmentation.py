@@ -25,7 +25,7 @@ def naive_audio_segmentation(filename, limit=4):
         reshaped_scaled_audio = np.reshape(scaled_audio_mfcc, (np.product(scaled_audio_mfcc.shape),))
         data_per_segmentation.append(reshaped_scaled_audio)
 
-    return np.array(data_per_segmentation)
+    return audio_length, np.array(data_per_segmentation)
 
 
 def onset_strength_envelope_audio_segmentation(filename, limit=4):
@@ -34,7 +34,8 @@ def onset_strength_envelope_audio_segmentation(filename, limit=4):
 
     data_per_segmentation = []
     audio_data, sampling_rate = librosa.load(filename, sr=None, mono=True)
+    audio_length = audio_data.shape[0] / sampling_rate
     onset_frames = librosa.onset.onset_detect(y=audio_data, sr=sampling_rate)
     onset_times = librosa.frames_to_time(onset_frames, sr=sampling_rate)
 
-    return data_per_segmentation
+    return audio_length, data_per_segmentation

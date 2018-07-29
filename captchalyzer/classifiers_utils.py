@@ -4,18 +4,11 @@ import numpy as np
 rng = np.random.RandomState(3141592653)
 
 
-class DataFile(object):
-    def __init__(self, X, y=None, expectation=None):
-        self.expectation = expectation
-        self.X = X
-        self.y = y
-
-
 def result_object(entry, obj={}):
     result = {
-        'filename': entry['file'],
-        'audio_length': entry['audio_length'],
-        'characters': entry['characters'],
+        'filename': entry['data'].filename,
+        'audio_length': entry['data'].audio_length,
+        'characters': entry['data'].characters,
     }
     result.update(obj)
 
@@ -35,7 +28,7 @@ def general_classifier(classification_data, clf):
         try:
             predictions = list(clf.predict(entry['data'].X))
             predictions_size = len(predictions)
-            expectation = entry['data'].expectation
+            expectation = entry['data'].characters
             difference = [i for i in range(predictions_size) if predictions[i] != expectation[i]]
             difference_size = len(difference)
             local_accuracy = (predictions_size - difference_size) / predictions_size
