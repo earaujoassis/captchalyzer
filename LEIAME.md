@@ -1,11 +1,11 @@
 # Captchalyzer
 
-> Extracto de CAPTCHAs a partir de arquivos de áudio análisados e classificados
+> Extração de CAPTCHAs a partir da análise e classificação de arquivos de áudio
 
-O prente projeto foi desenvolvido na disciplina/curso de "Mineração de Dados" do Programa de
+O presente projeto foi desenvolvido durante o curso de "Mineração de Dados" do Programa de
 Pós-graduação em Ciência da Computação da UFABC em 2018.Q2. Maiores detalhes de como executar
 a solução estão disponíveis no arquivo `README.md`. Como parte do projeto, foi solicitado
-escrever um relatório com as análises de dados feitas, as abordagens utilizadas e os resultados
+apresentar um relatório com as análises de dados feitas, as abordagens utilizadas e os resultados
 obtidos a partir dos experimentos. Tal relatório encontra-se disponível no arquivo
 `report-pt_BR.pdf`.
 
