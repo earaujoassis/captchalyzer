@@ -20,7 +20,7 @@ def waveplot(filename):
     plt.show()
 
 
-def silence_removed_audio_segmentation(filename):
+def silence_removed_audio_segmentation_plot(filename):
     improved_audio_segmentation(filename, plot=True)
 
 

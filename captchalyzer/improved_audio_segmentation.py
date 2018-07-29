@@ -29,7 +29,7 @@ from pydub import AudioSegment
 eps = 0.00000001
 
 
-def improved_audio_segmentation(filename, plot=False):
+def silence_removed_audio_segmentation(filename, plot=False):
     Fs, x = readAudioFile(filename)
     segments = silenceRemoval(x, Fs, 0.020, 0.020, 1.0, 0.3, plot=plot)
 
