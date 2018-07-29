@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import matplotlib.pyplot as plt
 import os.path
+import librosa
+import librosa.feature
+import matplotlib.pyplot as plt
 from .classifiers_utils import rng
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from scipy.fftpack.realtransforms import dct
 from scipy.fftpack import fft
 from pydub import AudioSegment
+
 
 ##
 # The functions belows were obtained from the pyAnalysis libary. Captchalyzer uses some
@@ -29,11 +33,22 @@ from pydub import AudioSegment
 eps = 0.00000001
 
 
-def silence_removed_audio_segmentation(filename, plot=False):
-    Fs, x = readAudioFile(filename)
-    segments = silenceRemoval(x, Fs, 0.020, 0.020, 1.0, 0.3, plot=plot)
+def silence_removed_audio_segmentation(filename, limit=4, plot=False):
+    data_per_segmentation = []
+    audio_data, sampling_rate = readAudioFile(filename)
+    audio_length = audio_data.shape[0] / sampling_rate
+    segments = silenceRemoval(audio_data, sampling_rate, 0.020, 0.020, 1.0, 0.3, plot=plot)
+    if len(segments) > limit:
+        segments = segments[0:limit]
+    for segment_start, segment_end in segments:
+        local_audio_data = audio_data[int(segment_start * sampling_rate):int(segment_end * sampling_rate)]
+        audio_mfcc = librosa.feature.mfcc(local_audio_data, sr=sampling_rate).T
+        scaler = StandardScaler()
+        scaled_audio_mfcc = scaler.fit_transform(audio_mfcc)
+        reshaped_scaled_audio = np.reshape(scaled_audio_mfcc, (np.product(scaled_audio_mfcc.shape),))
+        data_per_segmentation.append(reshaped_scaled_audio)
 
-    return segments
+    return audio_length, np.array(data_per_segmentation)
 
 
 def readAudioFile(filename):
@@ -55,13 +70,13 @@ def readAudioFile(filename):
     x = []
     for chn in range(audiofile.channels):
         x.append(data[chn::audiofile.channels])
-    x = np.array(x).T
+    x = np.array(x, dtype=float).T
 
     if x.ndim == 2:
         if x.shape[1] == 1:
             x = x.flatten()
 
-    return (Fs, x)
+    return x, Fs
 
 
 def silenceRemoval(x, Fs, stWin, stStep, smoothWindow, Weight, plot=False):
@@ -164,7 +179,7 @@ def stZCR(frame):
     """Computes zero crossing rate of frame"""
     count = len(frame)
     countZ = np.sum(np.abs(np.diff(np.sign(frame)))) / 2
-    return (np.float64(countZ) / np.float64(count - 1.0))
+    return np.float64(countZ) / np.float64(count - 1.0)
 
 
 def stEnergy(frame):
@@ -209,7 +224,7 @@ def stSpectralCentroidAndSpread(X, fs):
     C = C / (fs / 2.0)
     S = S / (fs / 2.0)
 
-    return (C, S)
+    return C, S
 
 
 def stSpectralEntropy(X, numOfShortBlocks=10):
@@ -257,7 +272,7 @@ def stSpectralRollOff(X, c, fs):
         mC = np.float64(a[0]) / (float(fftLength))
     else:
         mC = 0.0
-    return (mC)
+    return mC
 
 
 def stMFCC(X, fbank, nceps):
@@ -309,7 +324,7 @@ def stFeatureExtraction(signal, Fs, Win, Step):
     countFrames = 0
     nFFT = Win / 2
 
-    [fbank, freqs] = mfccInitFilterBanks(Fs, nFFT)       # compute the triangular filter banks used in the mfcc calculation
+    fbank, freqs = mfccInitFilterBanks(Fs, nFFT)       # compute the triangular filter banks used in the mfcc calculation
     nChroma, nFreqsPerChroma = stChromaFeaturesInit(nFFT, Fs)
 
     numOfTimeSpectralFeatures = 8
@@ -399,9 +414,9 @@ def normalizeFeatures(features):
     for f in features:
         ft = f.copy()
         for nSamples in range(f.shape[0]):
-            ft[nSamples, :] = (ft[nSamples, :] - MEAN) / STD
+            ft[nSamples,:] = (ft[nSamples,:] - MEAN) / STD
         featuresNorm.append(ft)
-    return (featuresNorm, MEAN, STD)
+    return featuresNorm, MEAN, STD
 
 
 def listOfFeatures2Matrix(features):
@@ -428,7 +443,7 @@ def listOfFeatures2Matrix(features):
         else:
             X = np.vstack((X, f))
             Y = np.append(Y, i * np.ones((len(f), 1)))
-    return (X, Y)
+    return X, Y
 
 
 def smoothMovingAvg(inputSignal, windowLen=11):
